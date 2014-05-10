@@ -1,5 +1,3 @@
-library(data.table)
-
 # Reading the file
 allFile <- read.table("household_power_consumption.txt", header = TRUE, colClasses = "character", sep = ";")
 
