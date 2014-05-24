@@ -18,15 +18,15 @@ library(plyr)
 total.emissions <- ddply(baltimore.data,
                          .(as.character(year)), # convert number to character
                          summarize, 
-                         total=sum(Emissions)) # sum to million tons
+                         total=sum(Emissions)) # sum to tons
 # Give column names
-colnames <- c("year","million.tons")
+colnames <- c("year","tons")
 colnames(total.emissions) <- colnames
 
 # Create the plot
 par(ps=12, mar=c(5.1,5.1,4.1,2.1))
 
-barplot(total.emissions$million.tons,
+barplot(total.emissions$tons,
         col="gold2",
         main=expression("Total emissions from PM"[2.5]*
                             " in the Baltimore City, Maryland"),
