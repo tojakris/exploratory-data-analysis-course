@@ -9,41 +9,46 @@ print("This will likely take a few seconds. Be patient!")
 NEI <- readRDS("./exdata-data-NEI_data/summarySCC_PM25.rds")
 SCC <- readRDS("./exdata-data-NEI_data/Source_Classification_Code.rds")
 
-# Subsetting data. Getting motor vehicle sources data
+# Counties data frame
+counties <- data.frame(fips=c("06037","24510"),
+                       county=c("Los Angeles County","Baltimore City"))
+
+# Motor vehicle sources
 vehicles <- SCC[SCC$Data.Category=="Onroad",]
 
-# Get Baltimore City, Maryland (fips == "24510")
-cities.data <- NEI[NEI$fips == "24510" | NEI$fips == "06037",]
+# Get only data from counties needed
+counties.data <- merge(NEI, counties, by.x="fips", by.y="fips")
 
-# Merging data
-vehicles.data = merge(cities.data,vehicles,by.x="SCC",by.y="SCC")
+# Get only data from counties needed and from motor vehicle sources
+vehicles.data <- merge(counties.data,vehicles,by.x="SCC",by.y="SCC")
+
 
 # Create the data for the plot
 library(plyr)
 
-total.emissions <- ddply(cities.data,
-                         .(as.factor(year), as.factor(fips)), # convert number to character
+total.emissions <- ddply(vehicles.data,
+                         .(as.factor(year), county),
                          summarize, 
-                         total=sum(Emissions)) # sum to million tons
+                         total=sum(Emissions)) # sum to tons
 
 # Give column names
-colnames <- c("year","fips", "tons")
+colnames <- c("year","county","tons")
 colnames(total.emissions) <- colnames
 
 # Create the plot
 library(ggplot2)
 
-png(filename = "plot6.png", width = 807, height = 342) ## Create my plots in a PNG file
+png(filename = "plot6.png", width = 640, height = 342) ## Create my plots in a PNG file
 
 qplot(year, 
       data = total.emissions, 
-      facets = . ~ fips, 
+      facets = . ~ county, 
       geom="bar", 
       weight=tons, 
       main=expression("Total emissions from PM"[2.5]*
                           " from motor vehicle sources"),
       xlab="Years",
       ylab = expression("Amount of PM"[2.5]*" emitted, in tons"),
-      fill = fips)
+      fill = county)
 
 dev.off()  ## Don't forget to close the PNG device!
