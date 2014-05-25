@@ -27,6 +27,8 @@ colnames <- c("year","million.tons")
 colnames(coal.emissions) <- colnames
 
 # Create the plot
+png(filename = "plot4.png", width = 600, height = 480) ## Create my plots in a PNG file
+
 par(ps=12, mar=c(5.1,5.1,4.1,2.1))
 
 barplot(coal.emissions$million.tons,
@@ -37,7 +39,6 @@ barplot(coal.emissions$million.tons,
         names.arg=coal.emissions$year)
 
 # Making png file
-dev.copy(png, file = "plot4.png")
 dev.off()  ## Don't forget to close the PNG device!
 
 
